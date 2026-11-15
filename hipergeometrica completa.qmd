@@ -1,0 +1,62 @@
+---
+title: "Distribución Hipergeométrica"
+lang: es
+---
+
+```{=html}
+<style>
+main.content {
+text-align: justify}
+</style>
+```
+
+
+Desarrollar como en la demás distribuciones, incluyendo la función de probabilidad, gráficas considerando el cambio en los parámetros de la distribución. Características de la distribución (media y varianza). Un ejemplo con valores simulados y la verificación del teorema central del límite. Tomar como referencia principal el libro Introducción a la Probabilidad de Luis Rincón, páginas 243-247.
+
+
+```{r}
+
+cat("Ejemplo de probabilidad de 2 éxitos:", dhyper(2, m=20, n=30, k=10), "\n")
+```
+```{r}
+N=50
+K=20
+n=10
+
+media=n*(K/N)
+varianza=n*(K/N)*(1-K/N)*((N-n)/(N-1))
+
+cat("Media:", media, "\n")
+cat("Varianza:", varianza, "\n")
+```
+```{r}
+set.seed(123)
+simulacion=rhyper(1000, m=20, n=30, k=10)
+
+cat("Media de la simulación:", mean(simulacion), "\n")
+cat("Varianza de la simulación:", var(simulacion), "\n")
+```
+```{r}
+library(ggplot2)
+x=0:10
+
+datos=data.frame(
+  exitos=x,
+  K20=dhyper(x, m=20, n=30, k=10),
+  K35=dhyper(x, m=35, n=15, k=10)
+)
+
+ggplot(datos, aes(x=exitos)) +
+  geom_line(aes(y=K20, color="K=20"), linewidth=1) +
+  geom_line(aes(y=K35, color="K=35"), linewidth=1) +
+  labs(title="Cambio de parámetros en Hipergeométrica", x="Éxitos en la muestra", y="Probabilidad")
+```
+```{r}
+set.seed(456)
+medias=replicate(1000, mean(rhyper(1, m=20, n=30, k=30)))
+
+ggplot(data.frame(medias), aes(x=medias)) +
+  geom_histogram(aes(y=after_stat(density)), bins=30, fill="lightblue") +
+  stat_function(fun=dnorm, args=list(mean=mean(medias), sd=sd(medias)), color="red", linewidth=1) +
+  labs(title="TCL para Hipergeométrica", x="Medias", y="Densidad")
+```
