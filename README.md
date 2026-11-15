@@ -1,1 +1,0 @@
-# Bioestad-stica2026
